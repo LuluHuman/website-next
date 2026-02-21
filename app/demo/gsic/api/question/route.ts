@@ -1,6 +1,8 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, MediaResolution } from "@google/genai";
+import { readFileSync } from "fs";
 
 import { cookies } from 'next/headers'
+import { setTimeout } from "timers/promises";
 const { createHash } = require('crypto');
 
 
@@ -27,18 +29,22 @@ export async function POST(request: Request) {
 
     if (!mime || !data) return new Response("The image is not imageing. Get out of here no free api for you >:(", { status: 400 })
 
-    const ai = new GoogleGenAI({});
-    const contents = [
-        { inlineData: { mimeType: mime, data } },
-        { text: qn },
-    ];
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: contents,
-        config: {
-            systemInstruction: "You are an AI used to help with sustainability. The user will input an image and ask a question about sustainability of the image like 'how do i recycle the item'. Respond with instructions to help the user. Be short but clear - at least 1 or 2 paragraphs.",
-        },
-    });
+    // const ai = new GoogleGenAI({});
+    // const contents = [
+    //     { inlineData: { mimeType: mime, data } },
+    //     { text: qn },
+    // ];
+    // const response = await ai.models.generateContent({
+    //     model: "gemini-3-flash-preview",
+    //     contents: contents,
+    //     config: {
+    //         systemInstruction: "You are an AI used to help with sustainability. The user will input an image and ask a question about sustainability of the image. Be short but clear not more then 1 paragraph", //Respond with a question that can be searched online in the first line. this will be used internally. The rest can be the ansewrs for example: \"How do i dispose SSDs\n\nTo dispose ssds...\".
+    //         mediaResolution: MediaResolution.MEDIA_RESOLUTION_MEDIUM
+    //     },
+    // });
 
-    return new Response(response.text)
+    // return new Response(response.text)
+    const f = readFileSync("/home/lulu/Documents/luluhoy-next/app/demo/gsic/api/question/example.md", "utf-8")
+    await setTimeout(3000)
+    return new Response(f)
 }

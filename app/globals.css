@@ -11,13 +11,23 @@ body {
 }
 
 h1 {
-	@apply text-2xl mt-2;
+	@apply text-2xl m-2;
 }
 
 h2 {
-	@apply text-3xl mt-2;
+	@apply text-3xl m-2;
 }
 
 h3 {
-	@apply text-4xl mt-2;
+	@apply text-4xl m-2;
+}
+
+@keyframes pulse {
+	50% {
+		opacity: 0.5;
+	}
+}
+
+.pulse {
+	animation: pulse 3000ms infinite alternate;
 }
