@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme inline {
+	--color-background: #392c3e;
+	--color-background-2: #4c3a55;
+	--color-primary: #e3b7f4;
+}
+
+body {
+	@apply bg-background text-primary;
+}
+
+h1 {
+	@apply text-2xl mt-2;
+}
+
+h2 {
+	@apply text-3xl mt-2;
+}
+
+h3 {
+	@apply text-4xl mt-2;
+}
