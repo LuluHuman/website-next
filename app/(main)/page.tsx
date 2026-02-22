@@ -1,12 +1,15 @@
 import Image from "next/image";
-
 export default function Home() {
+  const blur = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAADXUAAA11AFeZeUIAAAAR0lEQVR4nGP4f+r/fzA+DcEM/x///38heef/Iz6z/5d69f9n6Ive8H+pX+X/Vlfn/wb8Pv8ZZmfs/i/MoPff3CL0/4rCw/8BoX8sFRLbChYAAAAASUVORK5CYII="
   return (
     <div className="h-full flex flex-col gap-8 justify-center items-center ">
       <div className="w-fit h-fit flex gap-4 flex-col items-center sm:flex-row">
-        <div className="rounded-full overflow-hidden items-center w-fit h-fit">
+        <div className="rounded-full overflow-hidden items-center w-fit h-fit size-28.5">
           <Image
-            src={"/prof_img.webp"}
+            loading="lazy"
+            placeholder="blur"
+            blurDataURL={blur}
+            src={"/prof_img.png"}
             width={114}
             height={114}
             alt="profile image"
@@ -15,7 +18,11 @@ export default function Home() {
         <div className="flex flex-col justify-center">
           <p className="text-xl">Hewo!~ I'm</p>
           <p className="text-4xl">lulu</p>
-          <p className="text-xl">The developer that develops stuff...</p>
+          <p className="text-xl">The developer that develops stuff... </p>
+          <div className="*:bg-background gap-2 *:rounded-full *:px-2 *:py-1 my-1 flex flex-wrap">
+            <span>📌Singapore</span>
+            <span>🎓Application In Development</span>
+          </div>
         </div>
       </div>
       <div className="*:size-16 *:bg-background *:flex *:items-center *:justify-center *:rounded-full flex gap-4">
