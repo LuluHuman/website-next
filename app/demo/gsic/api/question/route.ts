@@ -1,8 +1,9 @@
-import { GoogleGenAI, MediaResolution } from "@google/genai";
-import { readFileSync } from "fs";
+// import { readFileSync } from "fs";
+// import { setTimeout } from "timers/promises";
+
+import { GenerateContentResponse, GoogleGenAI, MediaResolution } from "@google/genai";
 
 import { cookies } from 'next/headers'
-import { setTimeout } from "timers/promises";
 const { createHash } = require('crypto');
 
 
@@ -29,21 +30,27 @@ export async function POST(request: Request) {
 
     if (!mime || !data) return new Response("The image is not imageing. Get out of here no free api for you >:(", { status: 400 })
 
-    const ai = new GoogleGenAI({});
-    const contents = [
-        { inlineData: { mimeType: mime, data } },
-        { text: qn },
-    ];
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: contents,
-        config: {
-            systemInstruction: "You are an AI used to help with sustainability. The user will input an image and ask a question about sustainability of the image. Be short but clear not more then 1 paragraph", //Respond with a question that can be searched online in the first line. this will be used internally. The rest can be the ansewrs for example: \"How do i dispose SSDs\n\nTo dispose ssds...\".
-            mediaResolution: MediaResolution.MEDIA_RESOLUTION_MEDIUM
-        },
-    });
+    var response: GenerateContentResponse | undefined
+    try {
+        const ai = new GoogleGenAI({});
+        const contents = [
+            { inlineData: { mimeType: mime, data } },
+            { text: qn },
+        ];
+        response = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: contents,
+            config: {
+                systemInstruction: "You are an AI used to help with sustainability. The user will input an image and ask a question about sustainability of the image. Be short but clear not more then 1 paragraph", //Respond with a question that can be searched online in the first line. this will be used internally. The rest can be the ansewrs for example: \"How do i dispose SSDs\n\nTo dispose ssds...\".
+                mediaResolution: MediaResolution.MEDIA_RESOLUTION_MEDIUM
+            },
+        });
+    } catch (err) {
+        console.error(err);
+        return new Response(JSON.stringify({ error: (err as Error).message }), { status: 500 })
+    }
 
-    return new Response(response.text)
+    return response ? new Response(JSON.stringify({ text: response.text })) : new Response(JSON.stringify({ error: "No response was recieved" }), { status: 500 })
     // const f = readFileSync("/home/lulu/Documents/luluhoy-next/app/demo/gsic/api/question/example.md", "utf-8")
     // await setTimeout(3000)
     // return new Response(f)

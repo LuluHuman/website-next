@@ -1,15 +1,21 @@
 "use client"
-
 import axios from "axios"
 import { compiler } from "markdown-to-jsx"
 import { redirect } from "next/navigation"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+
+enum ResponseState {
+    READY = 0,
+    ASKING = 1,
+    RESPONDED = 2,
+    RESPONDED_ERROR = 12,
+}
 
 export default function Gsic() {
     const [imgSrc, setImgSrc] = useState<string>()
     const [qn, setQn] = useState<string>("")
 
-    const [response, setResponse] = useState<string | null | undefined>()
+    const [response, setResponse] = useState<{ state: ResponseState, text?: string }>({ state: ResponseState.READY })
     const [error, setError] = useState<string>()
 
     const [auth, setAuth] = useState<boolean>(false)
@@ -22,14 +28,21 @@ export default function Gsic() {
             })
     }, [])
 
+    const buttonStates: { [key: number]: React.JSX.Element | string } = {}
+    buttonStates[ResponseState.READY] = "Ask"
+    buttonStates[ResponseState.ASKING] = <Loader />
+    buttonStates[ResponseState.RESPONDED] = "Retry now"
+    buttonStates[ResponseState.RESPONDED_ERROR] = "Try Again"
+
 
     return <div className="flex flex-col w-full h-full justify-center items-center gap-2">
         {!auth && <p>Checking access...</p>}
 
 
+        <a href="/demo">Demos</a>
         <p>{(response !== undefined && qn) || "Add an image to ask about"}</p>
         <div className="bg-background px-2 p-4 rounded-4xl size-64">
-            <input id="myImage" type="file" accept="image/*, image/jpeg" disabled={!auth || typeof response == "string"}
+            <input id="myImage" type="file" accept="image/*, image/jpeg" disabled={!auth || typeof response.text == "string"}
                 className="absolute size-64 text-center opacity-0"
                 onChange={(e) => {
                     if (!e.target.files || !e.target.files[0]) return
@@ -42,29 +55,46 @@ export default function Gsic() {
         </div>
 
         <div className="flex gap-2 w-full max-w-160">
-            <input type="text" className="bg-background px-2 p-4 rounded-4xl flex-1" placeholder="Use the suggested questions or ask your own" disabled={!auth || typeof response == "string"}
-                onChange={(e) => setQn(e.target.value)} value={typeof response == "string" ? "Reload to retry" : qn}
+            <input type="text" className={`bg-background px-2 p-4 rounded-4xl flex-1 ${typeof response.text == "string" ? "hidden" : ""}`}
+                placeholder="Use the suggested questions or ask your own"
+                disabled={!auth}
+                onChange={(e) => setQn(e.target.value)}
+                value={qn}
             />
-            <div>
-                <button className="bg-primary text-background px-2 p-4 rounded-4xl size-14" disabled={!auth || typeof response == "string"}
-                    onClick={async () => {
-                        if (!imgSrc && !qn) return setError("You asked for nothing your gonna get nothing")
-                        if (!imgSrc) return setError("Upload an image")
-                        if (!qn) return setError("Ask a question")
-                        setResponse(null)
-                        const response = await axios.post("/demo/gsic/api/question", JSON.stringify({ qn, image: imgSrc }))
-                        setResponse(response.data)
-                    }}>
-                    {response === null ? <Loader /> : "Ask"}
-                </button>
-            </div>
+            <button className={`bg-primary text-background px-2 p-4 rounded-4xl h-14 ${![ResponseState.RESPONDED, ResponseState.RESPONDED_ERROR].includes(response.state) ? "w-14" : "w-full"}`}
+                onClick={async () => {
+                    switch (response.state) {
+                        case ResponseState.READY: {
+                            if (!imgSrc && !qn) return setError("You asked for nothing your gonna get nothing")
+                            if (!imgSrc) return setError("Upload an image")
+                            if (!qn) return setError("Ask a question")
+                            setResponse({ state: ResponseState.ASKING })
+                            const response = await axios.post("/demo/gsic/api/question", JSON.stringify({ qn, image: imgSrc }), { validateStatus: () => true })
+                            if (response.data.text) setResponse({ state: ResponseState.RESPONDED, text: response.data.text })
+                            else if (response.data.error) setResponse({ state: ResponseState.RESPONDED_ERROR, text: "An error has occured: <br/>" + response.data.error })
+                            break
+                        }
+
+                        case ResponseState.RESPONDED:
+                        case ResponseState.RESPONDED_ERROR: {
+                            setImgSrc(undefined)
+                            setQn("")
+                            setError(undefined)
+                            setResponse({ state: ResponseState.READY })
+                            break
+                        }
+                    }
+                }}>
+                {buttonStates[response.state]}
+            </button>
         </div>
         <span className="text-red-500">{error}</span>
         <SuggestionList
+            hidden={response.state !== ResponseState.READY}
             suggestions={[
                 {
                     icon: "🗑️",
-                    text: "How do i dispose this",
+                    text: "How do i properly dispose this",
                 },
                 {
                     icon: "♻️",
@@ -78,10 +108,10 @@ export default function Gsic() {
             setQn={setQn} />
 
         {
-            response !== undefined &&
-            <div className={`bg-[#755085] rounded-2xl p-2 transition min-w-64 duration-500`}>
-                {response && compiler(response)}
-                {response === null && <div className="flex justify-center gap-2">
+            response.text !== undefined &&
+            <div className={`bg-[#755085] rounded-2xl p-2 transition min-w-64 duration-500 ${response.state == ResponseState.RESPONDED_ERROR ? "text-red-500" : ""}`}>
+                {typeof response?.text == "string" && compiler(response.text)}
+                {response.state == ResponseState.ASKING && <div className="flex justify-center gap-2">
                     <p className="h-4 size-4 my-1 bg-primary rounded-full pulse" />
                     <p className="h-4 size-4  my-1 bg-primary rounded-full pulse" />
                     <p className="h-4 size-4  my-1 bg-primary rounded-full pulse" />
@@ -92,8 +122,8 @@ export default function Gsic() {
 }
 
 
-function SuggestionList({ suggestions, setQn }: { suggestions: { icon: string, text: string }[], setQn: Dispatch<SetStateAction<string>> }) {
-    return <div className="flex gap-2 flex-wrap justify-center">
+function SuggestionList({ hidden, suggestions, setQn }: { hidden: boolean, suggestions: { icon: string, text: string }[], setQn: Dispatch<SetStateAction<string>> }) {
+    return <div className={`flex gap-2 flex-wrap justify-center ${hidden ? "hidden" : ""}`}>
         {suggestions.map(sug => <Suggestion key={sug.text} icon={sug.icon} text={sug.text} setQn={setQn} />)}
     </div>
 }
