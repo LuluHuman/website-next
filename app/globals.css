@@ -23,8 +23,37 @@ h3 {
 
 @keyframes pulse {
 	50% {
-		opacity: 0.5;
+		opacity: 0.9;
 	}
+}
+
+@keyframes inputHide {
+	0% {
+		width: 100%;
+		opacity: 1;
+		display: flex;
+	}
+	100% {
+		width: 0%;
+		opacity: 0;
+		padding: 0;
+		display: none;
+	}
+}
+.inputHide {
+	animation: inputHide 500ms forwards;
+}
+
+@keyframes buttonChangeLarge {
+	0% {
+		width: 3.5rem;
+	}
+	100% {
+		width: 100%;
+	}
+}
+.buttonChangeLarge {
+	animation: buttonChangeLarge 500ms;
 }
 
 .pulse {
