@@ -37,10 +37,7 @@ export default function Gsic() {
 
     return <div className="flex flex-col w-full h-full justify-center items-center gap-2">
         {!auth && <p>Checking access...</p>}
-
-
-        <a href="/demo">Demos</a>
-        <p>{(response !== undefined && qn) || "Add an image to ask about"}</p>
+        <p>{(response.state == ResponseState.RESPONDED && qn) || "Add an image to ask about"}</p>
         <div className="bg-background px-2 p-4 rounded-4xl size-64">
             <input id="myImage" type="file" accept="image/*, image/jpeg" disabled={!auth || typeof response.text == "string"}
                 className="absolute size-64 text-center opacity-0"
