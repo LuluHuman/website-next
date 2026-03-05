@@ -1,9 +1,9 @@
 
 export default function Info() {
     return <div>
-        <h1>What is SusSearcher?</h1>
+        <h1>What is SUSSIE?</h1>
         <p>
-            SusSearcher is A project for the 2nd Global Sustainability Innovation Competition(GSIC) to help consumers idenitify ways to sustainably use the item.This project solves the problem of consumers not knowing how to dispose of recycle named / unnamed items but want to make an impact. This product is ment to reduce waste by properly recycling and encourage reusing products by giving tips.
+            SUSSIE (<b>SUS</b>tainability <b>S</b>earch and a<b>I E</b>ngine) is A project for the 2nd Global Sustainability Innovation Competition(GSIC) to help consumers idenitify ways to sustainably use the item.This project solves the problem of consumers not knowing how to dispose of recycle named / unnamed items but want to make an impact. This product is ment to reduce waste by properly recycling and encourage reusing products by giving tips.
         </p>
 
         <h1>How does it help with sustainability?</h1>
@@ -13,7 +13,7 @@ export default function Info() {
 
         <h1>How to use</h1>
         <p>
-            Input an image as well as a question to the image SusSearcher will respond with ways to enourage sustainability.
+            Input an image as well as a question to the image SUSSIE will respond with ways to enourage sustainability.
         </p>
 
         <h1>What makes it different from other products?</h1>
@@ -28,7 +28,7 @@ export default function Info() {
             <li>Nextjs is used for the front and and backend of the website deployed on Vercel</li>
         </ol>
         <p className="opacity-50 my-4">
-            {"Authentication required due to the rate limits. View the source code "}            <a
+            {"View the source code "}<a
                 className="underline font-bold"
                 target="_blank"
                 href="https://github.com/LuluHuman/website-next/tree/master/app/demo/gsic">

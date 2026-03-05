@@ -1,9 +1,8 @@
 "use client"
 
 import axios from "axios"
-import { compiler } from "markdown-to-jsx"
 import { redirect } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export default function Gsic() {
     const [code, setCode] = useState<string>("")
