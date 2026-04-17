@@ -18,7 +18,7 @@ export default function Home() {
     <div>
       <h1>Demos</h1>
       <p>List of live project for demonstration:</p>
-      <div className="my-2 flex flex-col gap-2">{pages}</div>
+      <div className="my-2 flex flex-col gap-2 *:max-w-96">{pages}</div>
     </div>
   )
 }
