@@ -21,7 +21,7 @@ export default function Home() {
           <p className="text-xl">The developer that develops stuff... </p>
           <div className="*:bg-background gap-2 *:rounded-full *:px-2 *:py-1 my-1 flex flex-wrap">
             <span>📌Singapore</span>
-            <span>🎓Application In Development</span>
+            <span>🎓IT Application Development</span>
           </div>
         </div>
       </div>
